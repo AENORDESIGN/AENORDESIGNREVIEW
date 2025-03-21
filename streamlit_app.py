@@ -2,8 +2,11 @@ import streamlit as st
 import requests
 from datetime import date
 
+# 페이지 제목
+today = date.today()
 st.title('🏗️ 건축·경관 심의대상 분석기')
 
+# 사업개요 입력 부분
 st.header('사업 개요 입력')
 project_name = st.text_input('사업명', 'AENOR 타워 신축공사')
 location = st.text_input('사업 위치', '서울특별시 강남구 역삼동')
@@ -13,7 +16,8 @@ building_height = st.number_input('건축물 높이(m)', value=60)
 usage = st.selectbox('건축물 용도', ['업무시설', '주거시설', '문화집회시설', '숙박시설'])
 lighting_type = st.selectbox('조명 종류', ['LED', '일반조명', '기타'])
 
-API_KEY = st.text_input('국가법령정보 API Key', '발급 후 입력')
+# API Key는 Streamlit Secrets에서 불러오기 (안전 처리)
+API_KEY = st.secrets.get("api_key")
 
 def analyze_review(total_area, height, usage, location):
     if total_area >= 10000 or height >= 50:
@@ -37,10 +41,13 @@ def fetch_law_info(api_key, law_name):
     else:
         return None
 
+def generate_law_link(law_name):
+    return f"https://www.law.go.kr/법령/{law_name}"
+
 if st.button('분석 및 보고서 생성'):
     review_type, good_light_review = analyze_review(total_area, building_height, usage, location)
 
-    if API_KEY and API_KEY != '발급 후 입력':
+    if API_KEY:
         laws = []
         for law in ['건축법', '경관법', f'{location.split()[0]} 경관조례']:
             law_data = fetch_law_info(API_KEY, law)
@@ -50,9 +57,8 @@ if st.button('분석 및 보고서 생성'):
                     '내용': law_data['law'][0]['lawName']
                 })
     else:
-        laws = [{'법령명':'API Key 필요','내용':'국가법령정보 API Key를 입력하세요.'}]
+        laws = [{'법령명':'API Key 필요','내용':'관리자에게 문의하세요.'}]
 
-    today = date.today()
     st.markdown(f"""
     ### 📋 심의대상 검토 결과 보고서
     
@@ -75,6 +81,16 @@ if st.button('분석 및 보고서 생성'):
     """)
     
     for law in laws:
-        st.markdown(f"- **{law['법령명']}**: {law['내용']}")
+        law_link = generate_law_link(law['법령명'])
+        st.markdown(f"- [{law['법령명']}]({law_link}): {law['내용']}")
 
     st.info("※ 국가법령정보 API로 실시간 법령정보를 받아옵니다.")
+
+# Footer 추가
+st.markdown('''
+---
+<div style="text-align: center; font-size:14px;">
+    <strong>AENOR DESIGN</strong><br>
+    <span style="font-size:12px;">📧 aenordesign@gmail.com</span>
+</div>
+''', unsafe_allow_html=True)
