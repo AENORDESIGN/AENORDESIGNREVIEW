@@ -6,33 +6,37 @@ from datetime import date
 st.set_page_config(page_title='건축·경관 심의대상 분석기', layout="centered")
 
 # 페이지 제목
-st.title('🏗️ 건축·경관 심의대상 분석기')
+st.title('건축·경관 심의대상 분석기')
 
-# 사용자 입력 폼 (심미성 추가)
+# 사용자 입력 폼
 with st.form('사업 개요 입력'):
     st.subheader('사업 개요 입력')
     project_name = st.text_input('사업명', 'AENOR 타워 신축공사')
     location = st.text_input('사업 위치', '서울특별시 강남구 역삼동')
 
-    col1, col2 = st.columns(2)
-    land_area = col1 = st.number_input('대지면적(㎡)', value=5500)
+    land_area = st.number_input('대지면적(㎡)', value=5500)
     total_area = st.number_input('연면적(㎡)', value=12000)
     building_height = st.number_input('건축물 높이(m)', value=60)
     usage = st.selectbox('건축물 용도', ['업무시설', '주거시설', '문화집회시설', '숙박시설'])
     lighting_type = st.selectbox('조명 종류', ['LED', '일반조명', '기타'])
 
-    submitted = st.form_submit_button('분석 및 보고서 생성 🚀')
+    submitted = st.form_submit_button('분석 및 보고서 생성')
 
-# API 키는 Streamlit Secrets에 저장
 API_KEY = st.secrets.get("api_key", None)
 
-def analyze_review(total_area, height, usage, location):
-    if total_area >= 10000 or height >= 50:
-        review_type = '공동위원회'
+# 심의 조건 분석 로직을 구체적으로 개선
+def analyze_review(total_area, height, usage, location, land_area):
+    building_review = total_area >= 10000 or height >= 50
+    landscape_review = total_area >= 5000 or height >= 30 or land_area >= 3000
+
+    if building_review and landscape_review:
+        review_type = '공동위원회(건축+경관)'
+    elif building_review:
+        review_type = '건축 단독심의'
+    elif landscape_review:
+        review_type = '경관 단독심의'
     elif usage in ['숙박시설', '문화집회시설']:
         review_type = '통합심의'
-    elif total_area >= 3000:
-        review_type = '단독심의'
     else:
         review_type = '심의대상 아님'
 
@@ -51,8 +55,8 @@ def fetch_law_info(api_key, law_name):
 def generate_law_link(law_name):
     return f"https://www.law.go.kr/법령/{law_name}"
 
-if st.button('분석 및 보고서 생성'):
-    review_type, good_light_review = analyze_review(total_area, building_height, usage, location)
+if submitted:
+    review_type, good_light_review = analyze_review(total_area, building_height, usage, location, land_area)
 
     api_key = st.secrets["api_key"] if "api_key" in st.secrets else None
 
@@ -69,7 +73,7 @@ if st.button('분석 및 보고서 생성'):
         laws = [{'법령명':'API Key 필요','내용':'관리자에게 문의하세요.'}]
 
     st.markdown(f"""
-    ### 📋 심의대상 검토 결과 보고서
+    ### 심의대상 검토 결과 보고서
 
     **사업명**: {project_name}  
     **위치**: {location}  
@@ -80,13 +84,13 @@ if st.button('분석 및 보고서 생성'):
 
     ---
 
-    **심의 대상 여부**: {"✅ 심의대상" if review_type != '심의대상 아님' else "❌ 심의대상 아님"}  
+    **심의 대상 여부**: {"심의대상" if review_type != '심의대상 아님' else "심의대상 아님"}  
     **심의 유형**: {review_type}  
     **좋은빛 디자인 심의(서울)**: {good_light_review}
 
     ---
 
-    ### 🔍 적용 법령 및 근거:
+    ### 적용 법령 및 근거:
     """)
 
     for law in laws:
