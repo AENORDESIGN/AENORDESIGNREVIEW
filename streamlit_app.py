@@ -30,6 +30,7 @@ if menu == "AENOR DESIGN":
 
     ### 문의
     📧 aenordesign@gmail.com
+    ''')
 
 # 심의대상 분석기 페이지
 elif menu == "심의대상 분석기":
@@ -62,7 +63,7 @@ elif menu in ["지자체 법령", "기본계획"]:
 
     sheet_url = st.secrets["local_law"] if menu == "지자체 법령" else st.secrets["basic_plan"]
     csv_url = sheet_url.replace("/edit#gid=", "/export?format=csv&gid=")
-    
+
     df = pd.read_csv(csv_url)
 
     for index, row in df.iterrows():
