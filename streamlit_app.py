@@ -2,22 +2,29 @@ import streamlit as st
 import requests
 from datetime import date
 
+# 페이지 설정 (레이아웃 및 색상)
+st.set_page_config(page_title='건축·경관 심의대상 분석기', layout="centered")
+
 # 페이지 제목
-today = date.today()
 st.title('🏗️ 건축·경관 심의대상 분석기')
 
-# 사업개요 입력 부분
-st.header('사업 개요 입력')
-project_name = st.text_input('사업명', 'AENOR 타워 신축공사')
-location = st.text_input('사업 위치', '서울특별시 강남구 역삼동')
-land_area = st.number_input('대지면적(㎡)', value=5500)
-total_area = st.number_input('연면적(㎡)', value=12000)
-building_height = st.number_input('건축물 높이(m)', value=60)
-usage = st.selectbox('건축물 용도', ['업무시설', '주거시설', '문화집회시설', '숙박시설'])
-lighting_type = st.selectbox('조명 종류', ['LED', '일반조명', '기타'])
+# 사용자 입력 폼 (심미성 추가)
+with st.form('사업 개요 입력'):
+    st.subheader('사업 개요 입력')
+    project_name = st.text_input('사업명', 'AENOR 타워 신축공사')
+    location = st.text_input('사업 위치', '서울특별시 강남구 역삼동')
 
-# API Key는 Streamlit Secrets에서 불러오기 (안전 처리)
-API_KEY = st.secrets.get("api_key")
+    col1, col2 = st.columns(2)
+    land_area = col1 = st.number_input('대지면적(㎡)', value=5500)
+    total_area = st.number_input('연면적(㎡)', value=12000)
+    building_height = st.number_input('건축물 높이(m)', value=60)
+    usage = st.selectbox('건축물 용도', ['업무시설', '주거시설', '문화집회시설', '숙박시설'])
+    lighting_type = st.selectbox('조명 종류', ['LED', '일반조명', '기타'])
+
+    submitted = st.form_submit_button('분석 및 보고서 생성 🚀')
+
+# API 키는 Streamlit Secrets에 저장
+API_KEY = st.secrets.get("api_key", None)
 
 def analyze_review(total_area, height, usage, location):
     if total_area >= 10000 or height >= 50:
@@ -47,10 +54,12 @@ def generate_law_link(law_name):
 if st.button('분석 및 보고서 생성'):
     review_type, good_light_review = analyze_review(total_area, building_height, usage, location)
 
-    if API_KEY:
+    api_key = st.secrets["api_key"] if "api_key" in st.secrets else None
+
+    if api_key:
         laws = []
         for law in ['건축법', '경관법', f'{location.split()[0]} 경관조례']:
-            law_data = fetch_law_info(API_KEY, law)
+            law_data = fetch_law_info(api_key, law)
             if law_data and 'law' in law_data:
                 laws.append({
                     '법령명': law,
@@ -61,7 +70,7 @@ if st.button('분석 및 보고서 생성'):
 
     st.markdown(f"""
     ### 📋 심의대상 검토 결과 보고서
-    
+
     **사업명**: {project_name}  
     **위치**: {location}  
     **대지면적**: {land_area}㎡  
@@ -70,7 +79,7 @@ if st.button('분석 및 보고서 생성'):
     **용도**: {usage}
 
     ---
-    
+
     **심의 대상 여부**: {"✅ 심의대상" if review_type != '심의대상 아님' else "❌ 심의대상 아님"}  
     **심의 유형**: {review_type}  
     **좋은빛 디자인 심의(서울)**: {good_light_review}
@@ -79,18 +88,17 @@ if st.button('분석 및 보고서 생성'):
 
     ### 🔍 적용 법령 및 근거:
     """)
-    
+
     for law in laws:
         law_link = generate_law_link(law['법령명'])
         st.markdown(f"- [{law['법령명']}]({law_link}): {law['내용']}")
 
     st.info("※ 국가법령정보 API로 실시간 법령정보를 받아옵니다.")
 
-# Footer 추가
-st.markdown('''
----
-<div style="text-align: center; font-size:14px;">
+# 하단 정보 (푸터)
+st.markdown("""
+<div style="text-align:center; margin-top:50px; font-size:14px; color:gray;">
     <strong>AENOR DESIGN</strong><br>
-    <span style="font-size:12px;">📧 aenordesign@gmail.com</span>
+    📧 aenordesign@gmail.com
 </div>
-''', unsafe_allow_html=True)
+""", unsafe_allow_html=True)
