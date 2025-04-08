@@ -6,7 +6,7 @@ st.set_page_config(page_title="AENOR 심의대상 분석기", layout="wide")
 
 # 헤더 구성
 logo = Image.open("aenor_logo.png")
-st.sidebar.image(logo, use_column_width=True)
+st.sidebar.image(logo, use_container_width=True)
 st.sidebar.markdown("# AENOR")
 
 # 상단 네비게이션 바
