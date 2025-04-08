@@ -1,4 +1,9 @@
+
 import streamlit as st
 
-st.title("출처 및 문의")
-st.markdown("이 앱은 국가법령정보 공동활용 API를 활용해 자동 분석합니다.\n문의: aenordesign@gmail.com")
+st.set_page_config(page_title="Contact", layout="wide")
+
+st.markdown("# 출처 및 문의")
+st.write("국가법령정보센터 API를 통해 실시간 조례를 조회합니다.")
+st.markdown("문의: **aenordesign@gmail.com**")
+st.markdown("© 2025 AENOR DESIGN")
