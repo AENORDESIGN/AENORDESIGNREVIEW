@@ -1,1 +1,15 @@
-/* 스타일 정의 예정 */
+st.markdown(
+    """
+    <style>
+    body {
+        background-color: #f9f9f9;
+        font-family: 'Noto Sans', sans-serif;
+    }
+    .stButton button {
+        border-radius: 0px;
+        border: 1px solid #888;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
