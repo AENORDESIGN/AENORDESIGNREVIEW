@@ -1,9 +1,0 @@
-
-import streamlit as st
-
-def render_home():
-    st.title("건축·경관 심의대상\n자동 분석기")
-    st.markdown("#### 국가법령정보센터, 국토부 API를 통해 실시간 데이터를 제공합니다.")
-    st.markdown("---")
-    st.image("static/city_line.png", use_column_width=True)
-    st.button("분석 시작하기", on_click=lambda: st.experimental_set_query_params(page="Analysis"))
