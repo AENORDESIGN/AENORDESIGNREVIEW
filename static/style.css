@@ -1,31 +1,35 @@
 
+body {
+    background-color: #121212;
+    color: #f0f0f0;
+    font-family: 'Noto Sans KR', sans-serif;
+}
 .nav-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 30px;
-    background: #f9f9f9;
-    border-bottom: 1px solid #eee;
+    background: #1a1a1a;
+    border-bottom: 1px solid #333;
 }
 .nav-items a {
     margin-left: 20px;
     font-weight: bold;
     text-decoration: none;
-    color: #333;
+    color: #f0f0f0;
+}
+.nav-items a:hover {
+    color: #66ccff;
 }
 .centered {
     text-align: center;
-    margin-top: 60px;
+    margin-top: 80px;
 }
 .card {
-    background-color: #f8f8f8;
+    background-color: #1e1e1e;
     padding: 20px;
     border-radius: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #444;
     margin-top: 30px;
-}
-img.illustration {
-    display: block;
-    margin: 30px auto;
-    width: 70%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
 }
