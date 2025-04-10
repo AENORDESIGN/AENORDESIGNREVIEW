@@ -1,0 +1,31 @@
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
+    background: #f9f9f9;
+    border-bottom: 1px solid #eee;
+}
+.nav-items a {
+    margin-left: 20px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #333;
+}
+.centered {
+    text-align: center;
+    margin-top: 60px;
+}
+.card {
+    background-color: #f8f8f8;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    margin-top: 30px;
+}
+img.illustration {
+    display: block;
+    margin: 30px auto;
+    width: 70%;
+}
