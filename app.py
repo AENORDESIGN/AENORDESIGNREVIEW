@@ -1,10 +1,11 @@
 
-from app.home import render_home
-from app.analysis import render_analysis
-from app.about import render_about
-from app.contact import render_contact
-
 import streamlit as st
+from pages.home import render_home
+from pages.analysis import render_analysis
+from pages.about import render_about
+from pages.contact import render_contact
+
+st.set_page_config(page_title="AENOR DESIGN", layout="wide")
 
 PAGES = {
     "홈": render_home,
@@ -13,10 +14,5 @@ PAGES = {
     "문의": render_contact,
 }
 
-st.set_page_config(page_title="AENOR DESIGN", layout="wide")
-
-# 네비게이션
-st.sidebar.title("앱")
-selection = st.sidebar.radio("이동", list(PAGES.keys()))
-page = PAGES[selection]
-page()
+selection = st.sidebar.radio("메뉴를 선택하세요", list(PAGES.keys()))
+PAGES[selection]()
